@@ -1,4 +1,4 @@
-﻿namespace MultipleImplementationsDependencyInjection.Services
+﻿namespace MultipleImplementationsDependencyInjection.Services.Common
 {
     public interface IReminderService
     {

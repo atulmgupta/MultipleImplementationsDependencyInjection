@@ -1,4 +1,6 @@
 using MultipleImplementationsDependencyInjection.Services;
+using MultipleImplementationsDependencyInjection.Services.Common;
+using System.Linq.Expressions;
 
 namespace MultipleImplementationsDependencyInjection
 {
@@ -10,10 +12,23 @@ namespace MultipleImplementationsDependencyInjection
 
             // Add services to the container.
             //builder.Services.AddScoped<IMyService, MyServiceA>();
-            builder.Services.AddScoped<IReminderService, SmsReminderService>();
-            builder.Services.AddScoped<IReminderService, PushNotificationReminderService>();
-            builder.Services.AddScoped<IReminderService, EmailReminderService>();
-
+            builder.Services.AddSingleton<IReminderService, SmsReminderService>();
+            builder.Services.AddSingleton<IReminderService, PushNotificationReminderService>();
+            builder.Services.AddSingleton<IReminderService, EmailReminderService>();
+            builder.Services.AddSingleton<ServiceResolver>(serviceProvider => serviceType =>
+            {
+                switch (serviceType)
+                {
+                    case ServiceType.Email:
+                        return serviceProvider.GetService<EmailReminderService>();
+                    case ServiceType.Sms:
+                        return serviceProvider.GetService<SmsReminderService>();
+                    case ServiceType.Push:
+                        return serviceProvider.GetService<PushNotificationReminderService>();
+                    default:
+                        throw new KeyNotFoundException(); // or maybe return null, up to you
+                }
+            })
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

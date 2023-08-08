@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultipleImplementationsDependencyInjection.Services;
+using MultipleImplementationsDependencyInjection.Services.Common;
 
 namespace MultipleImplementationsDependencyInjection.Controllers
 {
