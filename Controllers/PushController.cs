@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MultipleImplementationsDependencyInjection.Services;
 using MultipleImplementationsDependencyInjection.Services.Common;
 
 namespace MultipleImplementationsDependencyInjection.Controllers
@@ -8,19 +7,19 @@ namespace MultipleImplementationsDependencyInjection.Controllers
     [Route("[controller]")]
     public class PushController : ControllerBase
     {
+        readonly IReminderServiceResolver reminderServiceResolver;
         readonly IReminderService _myService;
-        readonly IEnumerable<IReminderService> _myServices;
-        public PushController(IEnumerable<IReminderService> reminderServices)
+        public PushController(IReminderServiceResolver reminderServiceResolver)
         {
-            _myService = reminderServices.FirstOrDefault(s => s.GetType() == typeof(PushNotificationReminderService));
+            this.reminderServiceResolver = reminderServiceResolver;
+            this._myService = this.reminderServiceResolver(ServiceType.Push);
         }
 
         [HttpGet]
         [Route("HomeB/GetMyService")]
         public string GetMyService()
-        {
-            var service = _myServices.FirstOrDefault(s => s.GetType() == typeof(SmsReminderService));
-            return service.SendReminder();
+        {            
+            return this._myService.SendReminder();
         }
     }
 }

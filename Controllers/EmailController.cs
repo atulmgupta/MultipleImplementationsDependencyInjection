@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MultipleImplementationsDependencyInjection.Services;
 using MultipleImplementationsDependencyInjection.Services.Common;
 
 namespace MultipleImplementationsDependencyInjection.Controllers
@@ -8,19 +7,20 @@ namespace MultipleImplementationsDependencyInjection.Controllers
     [Route("[controller]")]
     public class EmailController : ControllerBase
     {
-        readonly ServiceResolver serviceResolver;  
-        readonly IReminderService _myService;
-        public EmailController(ServiceResolver serviceResolver)
-        {
-            this.serviceResolver = serviceResolver;
-            this._myService = serviceResolver(ServiceType.Email);
+        private readonly IReminderServiceResolver serviceResolver;  
+        private readonly IReminderService _myService;        
+        public EmailController(IReminderServiceResolver serviceResolver)
+        {            
+            this.serviceResolver = serviceResolver;            
+            this._myService = this.serviceResolver(ServiceType.Email);
+            Console.WriteLine("EmailController");
         }
 
         [HttpGet]
         [Route("GetMyService")]
         public string GetMyService()
-        {
-            return _myService.SendReminder();
+        {            
+            return this._myService.SendReminder();
         }
 
     }

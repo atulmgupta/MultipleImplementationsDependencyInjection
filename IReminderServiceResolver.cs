@@ -3,5 +3,5 @@ using MultipleImplementationsDependencyInjection.Services.Common;
 
 namespace MultipleImplementationsDependencyInjection
 {
-    public delegate IReminderService ServiceResolver(ServiceType serviceType);
+    public delegate IReminderService IReminderServiceResolver(ServiceType key);
 }

@@ -12,23 +12,20 @@ namespace MultipleImplementationsDependencyInjection
 
             // Add services to the container.
             //builder.Services.AddScoped<IMyService, MyServiceA>();
-            builder.Services.AddSingleton<IReminderService, SmsReminderService>();
-            builder.Services.AddSingleton<IReminderService, PushNotificationReminderService>();
-            builder.Services.AddSingleton<IReminderService, EmailReminderService>();
-            builder.Services.AddSingleton<ServiceResolver>(serviceProvider => serviceType =>
+            builder.Services.AddSingleton<SmsReminderService>();            
+            builder.Services.AddSingleton<EmailReminderService>();
+            builder.Services.AddSingleton<PushNotificationReminderService>();
+            // Use Delegate Factories to resolve the correct service
+            builder.Services.AddSingleton<IReminderServiceResolver>(serviceProvider => serviceType =>
             {
-                switch (serviceType)
+                return serviceType switch
                 {
-                    case ServiceType.Email:
-                        return serviceProvider.GetService<EmailReminderService>();
-                    case ServiceType.Sms:
-                        return serviceProvider.GetService<SmsReminderService>();
-                    case ServiceType.Push:
-                        return serviceProvider.GetService<PushNotificationReminderService>();
-                    default:
-                        throw new KeyNotFoundException(); // or maybe return null, up to you
-                }
-            })
+                    ServiceType.Email => serviceProvider.GetRequiredService<EmailReminderService>(),
+                    ServiceType.Sms => serviceProvider.GetRequiredService<SmsReminderService>(),
+                    ServiceType.Push => serviceProvider.GetRequiredService<PushNotificationReminderService>(),
+                    _ => throw new InvalidOperationException(), // or maybe return null, up to you
+                };
+            });
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -46,7 +43,6 @@ namespace MultipleImplementationsDependencyInjection
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

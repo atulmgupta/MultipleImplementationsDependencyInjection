@@ -11,7 +11,7 @@
 
         public virtual string SendReminder()
         {
-            return $"Decorated: Called => ${CallingService}";
+            return $"Decorated: Called => {CallingService}";
         }
     }
 }
